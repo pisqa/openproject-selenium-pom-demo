@@ -9,6 +9,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.entity.StringEntity;
+
+import java.time.Duration;
 import java.util.Base64;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -164,6 +166,8 @@ public class ProjectApi {
         for (int i = 0; i < projectCount; i++) {
             if (json.get("_embedded").get("elements").get(i).get("name").asText().equals(testProjectName)) {
                 deleteProject(json.get("_embedded").get("elements").get(i).get("id").asText());
+                // See if delay after delete helps with occasional 422 error on create
+                Thread.sleep(Duration.ofSeconds(20).toMillis());
             }
         }
     }

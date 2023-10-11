@@ -17,6 +17,7 @@ import org.openqa.selenium.WebDriver;
 import utils.Config;
 import wrappers.WaitWrappers;
 
+import java.time.Duration;
 import java.util.Base64;
 
 public class UserApi {
@@ -170,6 +171,8 @@ public class UserApi {
         for (int i = 0; i < userCount; i++) {
             if (json.get("_embedded").get("elements").get(i).get("login").asText().equals(this.config.getTestUser())) {
                 deleteUser(json.get("_embedded").get("elements").get(i).get("id").asText());
+                // See if delay after delete helps with occasional 422 error on create
+                Thread.sleep(Duration.ofSeconds(20).toMillis());
             }
         }
     }
