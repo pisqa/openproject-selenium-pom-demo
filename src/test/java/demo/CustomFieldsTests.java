@@ -10,6 +10,8 @@ import pages.*;
 import utils.Config;
 import utils.TestData;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CustomFieldsTests {
@@ -36,7 +38,7 @@ public class CustomFieldsTests {
     }
 
     @Test
-    public void addAndRemoveCustomFieldToTask() throws Exception {
+    public void addAndRemoveCustomFieldInTask() throws Exception {
 
         // Admin: create custom field
 
@@ -101,9 +103,12 @@ public class CustomFieldsTests {
         workPackagesListPage.selectItemByName(taskName);
 
         // verify title and custom field
+
+        // see if this helps with occasional StaleElementReferenceException in getCustomFieldValue
+        Thread.sleep(Duration.ofSeconds(5).toMillis());
         assertThat(workPackagePage.getWorkItemTitle()).isEqualTo(taskName);
         assertThat( workPackagePage.customFieldExistsInGroup(customGroupName, customFieldName)).isTrue();
-        assertThat(workPackagePage.getCustomFieldValue(customFieldName)).isEqualTo("yes");
+        assertThat(workPackagePage.getCustomFieldValue(customGroupName, customFieldName)).isEqualTo("yes");
 
         // verify custom field does not show in new Milestone
         userDriver.get(url);

@@ -3,7 +3,10 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import utils.Log;
 import wrappers.WaitWrappers;
+
+import java.time.Duration;
 
 public class WorkPackagesListPage {
 
@@ -25,9 +28,30 @@ public class WorkPackagesListPage {
         return createButton.isEnabled();
     }
 
-    public boolean tableCreateButtonAvailable() {
+    public boolean tableCreateButtonAvailable(boolean expectedAvailability) {
+        Log log = new Log();
+
         WebElement memTab = waitWrappers.waitForElement(wpTable);
-        return !memTab.findElements(tableCreateButton).isEmpty();
+        if (expectedAvailability) {
+            try {
+                waitWrappers.waitForElement(tableCreateButton);
+                return true;
+            } catch (Exception e) {
+                log.info("tableCreateButtonAvailable, exception waiting for " + tableCreateButton.toString());
+                log.info(e.getMessage());
+            }
+        } else {
+            try {
+//                Thread.sleep(Duration.ofSeconds(3).toMillis());
+                waitWrappers.waitForInvisibility(tableCreateButton);
+                return true;
+            } catch (Exception e) {
+                log.info("tableCreateButtonAvailable, exception waiting for invisibility of" + tableCreateButton.toString());
+                log.info(e.getMessage());
+            }
+        }
+        return false;
+//        return !memTab.findElements(tableCreateButton).isEmpty();
     }
 
     public void selectCreateType(String type) {

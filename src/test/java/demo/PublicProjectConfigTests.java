@@ -13,6 +13,9 @@ import pages.ProjectSettingsInformationPage;
 import pages.ProjectOverviewPage;
 import utils.Config;
 import utils.TestData;
+import utils.api.MembershipsApi;
+import utils.api.ProjectApi;
+import utils.api.UserApi;
 import wrappers.WaitWrappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +44,23 @@ public class PublicProjectConfigTests {
     void teardown() {
         adminDriver.quit();
     }
+
+//    @Test
+//    public void dummyTest() throws Exception {
+//
+////        UserApi uapi = new UserApi(config);
+////        uapi.createUserIfNonExistent();
+//
+////        ProjectApi papi = new ProjectApi(config);
+////        String pid = papi.createProjectIfNotExists();
+//
+////        MembershipsApi mapi = new MembershipsApi(config);
+////        mapi.createMembershipIfNonExistent("5", "5", "3", "Member");
+//
+//        new TestData().createTestData(true);
+//        return;
+//
+//    }
 
     @Test
     public void setProjectPublicThenNonMemberAccessAllowed() throws Exception {
@@ -74,7 +94,7 @@ public class PublicProjectConfigTests {
     }
 
     @Test
-    public void setProjectPrivateThenNonMemberAccessRefused() throws Exception {
+    public void setProjectNotPublicThenNonMemberAccessRefused() throws Exception {
 
         // Navigate to project settings page
         adminDriver.get("https://" + config.getDomainName() + ".openproject.com/projects/" +

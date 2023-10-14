@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import wrappers.CheckboxWrapper;
 import wrappers.WaitWrappers;
+
 import java.util.List;
 
 public class WorkPackagePage {
@@ -25,9 +26,9 @@ public class WorkPackagePage {
     public boolean customFieldExistsInGroup(String group, String field) {
         String locator = ".attributes-group[data-group-name='" + group + "']";
         WebElement groupEl = waitWrappers.waitForElement(By.cssSelector(locator));
-        String locator2 = "//span[contains(@data-qa-selector, 'customField') and contains(text(), '" + field +  "')]";
+        String locator2 = "//span[contains(@data-qa-selector, 'customField') and contains(text(), '" + field + "')]";
         List<WebElement> fieldEl = groupEl.findElements(By.xpath(locator2));
-        return  !fieldEl.isEmpty();
+        return !fieldEl.isEmpty();
     }
 
     public void enterWorkPackageName(String name) {
@@ -65,9 +66,14 @@ public class WorkPackagePage {
         return waitWrappers.waitForElement(workItemTitle).getText();
     }
 
-    public String getCustomFieldValue(String fieldName) {
-        String locator = "//span[contains(@data-field-name, 'customField') and contains(@aria-label, '" + fieldName + "')]";
-        return waitWrappers.waitForElement(By.xpath(locator)).getText();
+    public String getCustomFieldValue(String groupName, String fieldName) {
+
+        String groupLocator = "div.attributes-group[data-group-name='" + groupName + "']";
+        String fieldLlocator = "//span[contains(@data-field-name, 'customField') and contains(@aria-label, '" + fieldName + "')]";
+
+        WebElement groupEl = waitWrappers.waitForElement(By.cssSelector(groupLocator));
+
+        return groupEl.findElement(By.xpath(fieldLlocator)).getText();
     }
 }
 

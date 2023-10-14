@@ -30,8 +30,14 @@ public class MenuSidebarPage {
     }
 
     public void selectMenuItem(String item) {
-        String locator = "//span[@class='op-menu--item-title']/span[text()='" + item + "']";
-        waitWrappers.waitForElement(By.xpath(locator)).click();
+//        String locator = "//span[@class='op-menu--item-title']/span[text()='" + item + "']";
+        String locator = "//div[@id='menu-sidebar']//a[@data-qa-selector='op-menu--item-action' and @title='" + item + "']";
+
+
+        waitWrappers.waitToBeClickable(By.xpath(locator)).click();
     }
+
+
 }
 
+//a[contains(@title, "Calendars")]
