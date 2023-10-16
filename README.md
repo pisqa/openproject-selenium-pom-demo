@@ -241,7 +241,7 @@ The report will be available in target/site/surefire-report.html:
 
 ## Known Issues
 ### Error 422 on API call to create project
-In [src/main/java/utils/api/ProjectApi.java](src/main/java/utils/api/ProjectApi.java) 
+In [src/main/java/utils/api/ProjectApi.java](src/main/java/utils/api/ProjectApi.java)/createProject() 
 we delete and re-create the test project by API (to make sure we start each test run with clean data).
 Occasionally, get error 422 on the create. I have implemented a retry mechanism, but this hangs occasionally if the first retry also fails.
 Needs more investigation.
