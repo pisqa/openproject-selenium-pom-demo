@@ -140,7 +140,7 @@ The Administrator is about to create a new custom field at https://{domain}.open
 ![Custom fields list](src/main/resources/custom-fields-list.JPG)
 
 The page object for this page is defined in 
-[src/main/java/pages/CustomFieldsListPage.java](src/test/main/pages/CustomFieldsListPage.java).
+[src/main/java/pages/CustomFieldsListPage.java](src/main/java/pages/CustomFieldsListPage.java).
 
 
 The class CustomFieldsListPage exposes a number of methods including startCreateCustomField, 
