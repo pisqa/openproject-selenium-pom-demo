@@ -10,9 +10,9 @@ This project has been developed against the Enterprise Cloud Edition (14-day tri
 The test cases focus on various project or system configuration scenarios, and verify that configuration changes made 
 by an Administrator in one browser session take effect in a separate User browser session.
 
-A few random selected functionalities are used in order to demo the Page Object Model.
-Absolutely no claims are made regarding test coverage 
-:smile:
+A few randomly selected functionalities are used in order to demo the Page Object Model.
+Absolutely no claims are made regarding test coverage!
+
 
 ### [PublicProjectConfigTests](src/test/java/demo/PublicProjectConfigTests.java)
 These tests exercise the 
@@ -102,16 +102,22 @@ with the SUT.
 The POM design pattern offers three main advantages:
 
 ### Maintainability
-Selenium driver code that interacts with the SUT are isolated in the page object methods. 
+Selenium driver code that interacts with the SUT is isolated in the page object methods. 
 When changes occur in the SUT that require updates in the Selenium code (e.g. page element locator changes), 
-then that change only needs to be applied in one page object method.
-Without the POM, where each test case calls the Selenium code directly, the same change may need to be replicated
-in dozens of test cases.
+then that change only needs to be applied in a few page object methods.
+Without the POM, where each test case calls the Selenium code directly, the same change would need to be replicated
+in dozens or even hundreds of test cases.
 
-### Robustness
+### Reliability
+So-called flaky tests are automated tests that fail occasionally, but not because of a real issue in the SUT that needs to be investigated and fixed.
+Instead, some issue with the test code results in inconsistent behaviour between test runs.
+Typical issues are unreliable element locators, or an inadequate waiting strategy.
+
+While the POM in itself doesn't solve these issues, by encapsulating the Selenium code in page methods, 
+any reliability issues that are fixed are immediately applied to the whole test catalogue.
 
 ### Readability
-The test case code tends to be more concise, with references to well-named classes and methods making the 
+With the Page Object Model, test case code is more concise, with references to well-named classes and methods making the 
 intent and flow of the test case much clearer, as can be seen from this snippet:
 
 ```
@@ -134,7 +140,7 @@ The Administrator is about to create a new custom field at https://{domain}.open
 ![Custom fields list](src/main/resources/custom-fields-list.JPG)
 
 The page object for this page is defined in 
-[src/test/java/pages/CustomFieldsListPage.java](src/test/java/pages/CustomFieldsListPage.java).
+[src/main/java/pages/CustomFieldsListPage.java](src/test/main/pages/CustomFieldsListPage.java).
 
 
 The class CustomFieldsListPage exposes a number of methods including startCreateCustomField, 
@@ -146,12 +152,12 @@ public void startCreateCustomField() {
 }
 ```
 
-Now we are at https://{<domain}.openproject.com/custom_fields/new?type=WorkPackageCustomField:
+Now we are at https://{domain}.openproject.com/custom_fields/new?type=WorkPackageCustomField:
 
 ![Custom field](src/main/resources/custom-field.JPG)
 
 The page object for this page is defined in
-[src/test/java/pages/CustomFieldPage.java](src/test/java/pages/CustomFieldPage.java).
+[src/test/main/pages/CustomFieldPage.java](src/main/java/pages/CustomFieldPage.java).
 
 The class CustomFieldPage defines 3 methods to: enter the field name, select the field format and save the new field:
 
@@ -183,21 +189,17 @@ For this demo, because login is not the focus of the test cases, I chose to impl
 · This POM is obviously incomplete, with only the necessary objects/methods required for the demo. 
 
 
-## Project Structure
-Overview of different code components
+## Test Data
+The Admin user must be pre-existing, and configured in [config.properties](config.properties).
+The test user and test project are (re)created before each test run (in the @BeforeAll method).
 
-### [src/test/java/demo](src/test/java/demo)
-The high-level test case source files. We use
-[JUnit 5](https://junit.org/junit5/docs/current/user-guide/)
- for test runner scaffolding (@BeforeEach, @AfterEach, @test etc).
+Because user and project creation is not the focus of the test cases, and to improve test run times, this test data is created via the
+[OpenProject API](https://www.openproject.org/docs/api/).
 
-### [src/main/java/java/pages](src/main/java/java/pages)
-The Page Object Model source files. Most of the 
+API wrapper classes are defined in [src/main/java/utils/api](src/main/java/utils/api). 
+Test Data class is defined at [src/main/java/utils/Config.java](src/main/java/utils/Config.java)
 
-
-
-
-## Execution
+## Practicalities
 
 ### Prerequisites
 Maven is required to execute the tests in this project. 
@@ -220,7 +222,7 @@ To run the tests, execute the following command in the project root folder
 mvn test
 ```
 
-The tests should take no more then a couple of minutes to run, and display the following results:
+The tests should take no more than a couple of minutes to run, and display the following results:
 
 
 ![Execution results](src/main/resources/execution-results.JPG)
