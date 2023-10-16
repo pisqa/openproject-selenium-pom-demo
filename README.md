@@ -239,3 +239,24 @@ The report will be available in target/site/surefire-report.html:
 
 ![Test report](src/main/resources/test-report.JPG)
 
+## Known Issues
+### Error 422 on API call to create project
+In [src/main/java/utils/api/ProjectApi.java](src/main/java/utils/api/ProjectApi.java) 
+we delete and re-create the test project by API (to make sure we start each test run with clean data).
+Occasionally, get error 422 on the create. I have implemented a retry mechanism, but this hangs occasionally if the first retry also fails.
+Needs more investigation.
+
+### StaleElementReferenceException
+In [src/test/java/demo/CustomFieldsTests.java](src/test/java/demo/CustomFieldsTests.java) 
+the call to workPackagePage.getCustomFieldValue() at line 108 occasionally throws StaleElementReferenceException.
+Adding the thread.sleep() at line 105 seems to help, but need to fix properly.
+
+### ElementClickInterceptedException
+In [src/main/java/pages/Login.java](src/main/java/pages/Login.java) 
+the call to  waitWrappers.waitToBeClickable(skipTourButton).click() at line 53 usually throws ElementClickInterceptedException.
+Adding the thread.sleep() beforehand seems to help, but need to find a permanent fix.
+
+### Need delay after setting project public
+In [src/test/java/demo/PublicProjectConfigTests.java](src/test/java/demo/PublicProjectConfigTests.java) 
+need call to thread.sleep() at line 77, otherwise get TimeoutException at call to projectOverviewPage.getProjectDescription(), page is displaying error 403.
+
