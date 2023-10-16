@@ -7,16 +7,12 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-//import org.apache.http.impl.client.CloseableHttpClient;
-//import org.apache.http.impl.client.HttpClients;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.openqa.selenium.WebDriver;
 import utils.Config;
 import utils.Log;
-import wrappers.WaitWrappers;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -127,10 +123,6 @@ public class UserApi {
         request.addHeader("Authorization", "Basic " + encodedApiKey);
         request.addHeader("Content-Type", "application/json");
 
-        // add body
-        StringBuilder json = new StringBuilder();
-        json.append("{}");
-
         CloseableHttpResponse response = httpClient.execute(request);
         log.info(">>> deleteUser, response code: " + response.getStatusLine().getStatusCode());
 
@@ -138,7 +130,6 @@ public class UserApi {
         if (response.getStatusLine().getStatusCode() != 202) {
             String message =
                     "deleteUser: Call to DELETE " + url + "\n" +
-                            "Payload:\n" + json + "\n" +
                             "Returned:\n" +
                             response.getStatusLine().getStatusCode() + "\n" +
                             response.getStatusLine().getReasonPhrase() + "\n" +
@@ -160,10 +151,6 @@ public class UserApi {
         request.addHeader("Authorization", "Basic " + encodedApiKey);
         request.addHeader("Content-Type", "application/json");
 
-        // add body
-        StringBuilder json = new StringBuilder();
-        json.append("{}");
-
         CloseableHttpResponse response = httpClient.execute(request);
         log.info(">>> getAllUsers, response code: " + response.getStatusLine().getStatusCode());
 
@@ -171,7 +158,6 @@ public class UserApi {
         if (response.getStatusLine().getStatusCode() != 200) {
             String message =
                     "getAllUsers: Call to GET " + url + "\n" +
-                            "Payload:\n" + json + "\n" +
                             "Returned:\n" +
                             response.getStatusLine().getStatusCode() + "\n" +
                             response.getStatusLine().getReasonPhrase() + "\n" +
@@ -216,19 +202,14 @@ public class UserApi {
         request.addHeader("Authorization", "Basic " + encodedApiKey);
         request.addHeader("Content-Type", "application/json");
 
-//        // add body
-//        StringBuilder json = new StringBuilder();
-//        json.append("{}");
-
         CloseableHttpResponse response = httpClient.execute(request);
-        log.info(">>> getProjectByNameAndIdentifier, response code: " + response.getStatusLine().getStatusCode());
+        log.info(">>> getUserByLogin, response code: " + response.getStatusLine().getStatusCode());
 
         // Check HttpResponse Status
         String resultBody;
         if (response.getStatusLine().getStatusCode() != 200) {
             String message =
-                    "getProjectByNameAndIdentifier: Call to GET " + url + "\n" +
-//                            "Payload:\n" + json + "\n" +
+                    "getUserByLogin: Call to GET " + url + "\n" +
                             "Returned:\n" +
                             response.getStatusLine().getStatusCode() + "\n" +
                             response.getStatusLine().getReasonPhrase() + "\n" +
@@ -241,8 +222,6 @@ public class UserApi {
         httpClient.close();
         return resultBody;
     }
-
-
 
     public void deleteUserIfExists() throws Exception {
 
@@ -262,7 +241,7 @@ public class UserApi {
         for (int i = 0; i < userCount; i++) {
             if (json.get("_embedded").get("elements").get(i).get("login").asText().equals(this.config.getTestUser())) {
                 String uid = json.get("_embedded").get("elements").get(i).get("id").asText();
-                log.info(">>> deleteProjectIfExists, deleting project id " + uid);
+                log.info(">>> deleteUserIfExists, deleting project id " + uid);
                 deleteUser(uid);
             }
         }
@@ -285,7 +264,5 @@ public class UserApi {
             return json.get("_embedded").get("elements").get(0).get("id").asText();
         }
     }
-
-
 }
 

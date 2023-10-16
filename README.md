@@ -10,7 +10,9 @@ This project has been developed against the Enterprise Cloud Edition (14-day tri
 The test cases focus on various project or system configuration scenarios, and verify that configuration changes made 
 by an Administrator in one browser session take effect in a separate User browser session.
 
-A few random selected functionalities are used in order to demo the Page Object Model. Absolutely no claims are made for test coverage :-)
+A few random selected functionalities are used in order to demo the Page Object Model.
+Absolutely no claims are made regarding test coverage 
+:smile:
 
 ### [PublicProjectConfigTests](src/test/java/demo/PublicProjectConfigTests.java)
 These tests exercise the 
@@ -78,15 +80,80 @@ When the Administrator deletes custom field, it is not available to the User.
 </ul>
 
 #### Test Steps
-1. Admin: In the Admininistration > Custom Fields page, create a new custom field
-1. Admin: In the Admininistration > Work Packages >  Types page, add the new custom field to the Task Form Configuration
-1. User: In the Work Packages page, create a new Task. Verify the custom field is present and set a value
-2. User: Open the new Task and verify custom field and value are displayed
-3. User: In the Work Packages page, start creation of a Milestone. Verify the custom field is not present, then cancel
-1. User: In the Work Packages page, start creation of a Phase. Verify the custom field is not present, then cancel
-2. Admin: In the Admininistration > Custom Fields page, delete the custom field
-3. Admin: In the Admininistration > Work Packages >  Types page, verify the custom field is not present 
+1. Admin: In the Administration > Custom Fields page, create a new custom field
+2. Admin: In the Administration > Work Packages >  Types page, add the new custom field to the Task Form Configuration
+3. User: In the Work Packages page, create a new Task. Verify the custom field is present and set a value
+4. User: Open the new Task and verify custom field and value are displayed
+5. User: In the Work Packages page, start creation of a Milestone. Verify the custom field is not present, then cancel
+6. User: In the Work Packages page, start creation of a Phase. Verify the custom field is not present, then cancel
+7. Admin: In the Administration > Custom Fields page, delete the custom field
+8. Admin: In the Administration > Work Packages >  Types page, verify the custom field is not present 
 in the Task Form Configuration
-4. User: In the Work Packages page, open Task created in step 3. Verify the custom field is not present 
+9. User: In the Work Packages page, open Task created in step 3. Verify the custom field is not present 
+
+## Page Object Model
+Page Object Model (POM) is a popular test framework design pattern that aims to improve maintainability, 
+robustness and readability of test automation frameworks.
+
+As the name suggests it entails modelling UI application pages as objects, thus creating an abstraction layer
+between the test case logic, and the details of the interaction of the UI automation tool (in this case Selenium) 
+with the SUT.
+
+The POM design pattern offers three main advantages:
+
+### Maintainability
+Selenium driver code that interacts with the SUT are isolated in the page object methods. 
+When changes occur in the SUT that require updates in the Selenium code (e.g. page element locator changes), 
+then that change only needs to be applied in one page object method.
+Without the POM, where each test case calls the Selenium code directly, the same change may need to be replicated
+in dozens of test cases.
+
+### Robustness
+
+### Readability
+The test case code tends to be more concise , with references to well-named classes and methods making the 
+intent and flow of the test case much clearer, as can be seen from this snippet:
+
+```
+        // User: try to access the non-public project
+        userDriver.get("https://" + config.getDomainName() + 
+                ".openproject.com/projects/" + config.getTestProjectId());
+
+        // verify access not allowed
+        String expectedErrorMessage = "[Error 403] You are not authorized to access this page.";
+        ToastPage toastPage = new ToastPage(userDriver);
+        String toastText = toastPage.getText();
+        toastPage.closeToast();
+        assertThat(toastText).isEqualTo(expectedErrorMessage);
+```
+
+## Project Structure
+Overview of different code components
+
+## Execution
+
+### Prerequisites
+Maven is required to execute the tests in this project. 
+
+### Configuration
+Before running the tests, you will need to configure the following properties in [config.properties](config.properties):
+```
+# These properties need to be set
+domainName=
+adminUser=
+adminPassword=
+adminApiKey=
+```
+Refer to [API v3 usage example | Basic Auth](https://www.openproject.org/docs/api/example/#basic-auth)
+for API key generation.
+
+### Test Execution
+To run the tests, execute the following command in the project root folder
+```
+mvn test
+```
+
+The tests should take no more then a couple of minutes to run, and display the following results:
+![Execution results](src/main/resources/execution-results.JPG)
 
 

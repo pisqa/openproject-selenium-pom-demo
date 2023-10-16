@@ -5,19 +5,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import pages.*;
 import utils.Config;
 import utils.TestData;
-import wrappers.WaitWrappers;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProjectModulesTests {
 
     WebDriver adminDriver;
+    WebDriver userDriver;
     Config config;
 
     @BeforeAll
@@ -27,15 +24,21 @@ public class ProjectModulesTests {
 
     @BeforeEach
     void setup() throws Exception {
-        adminDriver = WebDriverManager.chromedriver().create();
         config = new Config();
-        LoginPage loginPage = new LoginPage(adminDriver);
-        loginPage.login(config.getAdminUser(), config.getAdminPassword());
+        adminDriver = WebDriverManager.chromedriver().create();
+        userDriver = WebDriverManager.chromedriver().create();
+
+        LoginPage adminLoginPage = new LoginPage(adminDriver);
+        adminLoginPage.login(config.getAdminUser(), config.getAdminPassword());
+
+        LoginPage userLoginPage = new LoginPage(userDriver);
+        userLoginPage.login(config.getTestUser(), config.getTestPassword());
     }
 
     @AfterEach
     void teardown() {
         adminDriver.quit();
+        userDriver.quit();
     }
 
 
@@ -53,15 +56,10 @@ public class ProjectModulesTests {
         projectSettingsModulesPage.setModuleSelection("Documents", true);
         projectSettingsModulesPage.saveChanges();
 
-        // on a new browser session, login as test user
-        WebDriver userDriver = WebDriverManager.chromedriver().create();
-        LoginPage loginPage = new LoginPage(userDriver);
-        loginPage.login(config.getTestUser(), config.getTestPassword());
-
-        // go to project page
+        // User: navigate to project page
         userDriver.get("https://" + config.getDomainName() + ".openproject.com/projects/" + config.getTestProjectId());
 
-        // verify budgets is available in the sidebar menu
+        // User: verify budgets is available in the sidebar menu
         MenuSidebarPage menuSidebarPage = new MenuSidebarPage(userDriver);
         String[] items = menuSidebarPage.getMenuItems();
         assertThat(items).contains("Budgets");
@@ -83,13 +81,10 @@ public class ProjectModulesTests {
         // verify documents is available in the sidebar menu
         assertThat(items).contains("Documents");
 
-        //verify link actually works!
+        // verify link actually works!
         menuSidebarPage.selectMenuItem("Documents");
         DocumentsListPage documentsListPage = new DocumentsListPage(userDriver);
         assertThat(documentsListPage.getPageHeader()).isEqualTo("Documents");
-
-
-
     }
 
     @Test
@@ -106,14 +101,8 @@ public class ProjectModulesTests {
         projectSettingsModulesPage.setModuleSelection("Backlogs", false);
         projectSettingsModulesPage.saveChanges();
 
-        // on a new browser session, login as test user
-        WebDriver userDriver = WebDriverManager.chromedriver().create();
-        LoginPage loginPage = new LoginPage(userDriver);
-        loginPage.login(config.getTestUser(), config.getTestPassword());
-
-
-        // verify deleted modules not available in user session
-        // go to project page
+        // User: verify deleted modules not available in user session
+        // User: navigate to project page
         userDriver.get("https://" + config.getDomainName() + ".openproject.com/projects/" + config.getTestProjectId());
 
         // verify News is not available in the sidebar menu
@@ -126,9 +115,11 @@ public class ProjectModulesTests {
                 config.getTestProjectId() + "news");
 
         // verify access not allowed
-        WaitWrappers waitWrappers = new WaitWrappers(userDriver, 30);
-        WebElement we = waitWrappers.waitForElement(By.cssSelector(".op-toast--content"));
-        assertThat(we.getText().contains("[Error 403] You are not authorized to access this page."));
+        String expectedErrorMessage = "[Error 404] The page you were trying to access doesn't exist or has been removed.";
+        ToastPage toastPage = new ToastPage(userDriver);
+        String toastText = toastPage.getText();
+        toastPage.closeToast();
+        assertThat(toastText).isEqualTo(expectedErrorMessage);
 
         // verify wiki is not available in the sidebar menu
         assertThat(items).doesNotContain("Wiki");
@@ -138,22 +129,20 @@ public class ProjectModulesTests {
                 config.getTestProjectId() + "wiki/wiki");
 
         // verify access not allowed
-        waitWrappers = new WaitWrappers(userDriver, 30);
-        we = waitWrappers.waitForElement(By.cssSelector(".op-toast--content"));
-        assertThat(we.getText().contains("[Error 403] You are not authorized to access this page."));
+        toastText = toastPage.getText();
+        toastPage.closeToast();
+        assertThat(toastText).isEqualTo(expectedErrorMessage);
 
         // verify Backlogs is not available in the sidebar menu
         assertThat(items).doesNotContain("Backlogs");
 
-        // try going directly to Wiki page url
+        // try going directly to Backlogs page url
         userDriver.get("https://" + config.getDomainName() + ".openproject.com/projects/" +
                 config.getTestProjectId() + "backlogs");
 
         // verify access not allowed
-        waitWrappers = new WaitWrappers(userDriver, 30);
-        we = waitWrappers.waitForElement(By.cssSelector(".op-toast--content"));
-        assertThat(we.getText().contains("[Error 403] You are not authorized to access this page."));
-
-
+        toastText = toastPage.getText();
+        toastPage.closeToast();
+        assertThat(toastText).isEqualTo(expectedErrorMessage);
     }
 }

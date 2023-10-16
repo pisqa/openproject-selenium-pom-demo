@@ -6,7 +6,6 @@ import org.openqa.selenium.WebElement;
 import utils.Log;
 import wrappers.WaitWrappers;
 
-import java.time.Duration;
 
 public class WorkPackagesListPage {
 
@@ -42,16 +41,15 @@ public class WorkPackagesListPage {
             }
         } else {
             try {
-//                Thread.sleep(Duration.ofSeconds(3).toMillis());
                 waitWrappers.waitForInvisibility(tableCreateButton);
                 return true;
             } catch (Exception e) {
-                log.info("tableCreateButtonAvailable, exception waiting for invisibility of" + tableCreateButton.toString());
+                log.info("tableCreateButtonAvailable, exception waiting for invisibility of" +
+                        tableCreateButton.toString());
                 log.info(e.getMessage());
             }
         }
         return false;
-//        return !memTab.findElements(tableCreateButton).isEmpty();
     }
 
     public void selectCreateType(String type) {
@@ -63,7 +61,8 @@ public class WorkPackagesListPage {
     }
 
     public void selectItemByName(String itemName) {
-        String locator = "//span[@data-field-name='subject' and @title='" + itemName + "']/ancestor::tr//span[@data-field-name='id']";
+        String locator = "//span[@data-field-name='subject' and @title='" + itemName +
+                "']/ancestor::tr//span[@data-field-name='id']";
         waitWrappers.waitForElement(By.xpath(locator)).click();
     }
 }

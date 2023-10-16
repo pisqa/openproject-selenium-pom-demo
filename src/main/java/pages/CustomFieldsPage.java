@@ -2,7 +2,7 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.Select;
+import wrappers.DropDownWrapper;
 import wrappers.WaitWrappers;
 
 public class CustomFieldsPage {
@@ -24,8 +24,8 @@ public class CustomFieldsPage {
     }
 
     public void selectFormat(String format) {
-        Select select = new Select(waitWrappers.waitForElement(formatSelector));
-        select.selectByValue(format);
+        DropDownWrapper dropDownWrapper = new DropDownWrapper(driver, formatSelector);
+        dropDownWrapper.select(format);
     }
 
     public void saveNewCustomField() {

@@ -11,18 +11,19 @@ import org.openqa.selenium.WebElement;
 import pages.LoginPage;
 import pages.ProjectSettingsInformationPage;
 import pages.ProjectOverviewPage;
+import pages.ToastPage;
 import utils.Config;
 import utils.TestData;
-import utils.api.MembershipsApi;
-import utils.api.ProjectApi;
-import utils.api.UserApi;
 import wrappers.WaitWrappers;
+
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PublicProjectConfigTests {
 
     WebDriver adminDriver;
+    WebDriver userDriver;
     Config config;
 
     @BeforeAll
@@ -34,42 +35,33 @@ public class PublicProjectConfigTests {
 
     @BeforeEach
     void setup() throws Exception {
-        adminDriver = WebDriverManager.chromedriver().create();
+
         config = new Config();
-        LoginPage loginPage = new LoginPage(adminDriver);
-        loginPage.login(config.getAdminUser(), config.getAdminPassword());
+        adminDriver = WebDriverManager.chromedriver().create();
+        userDriver = WebDriverManager.chromedriver().create();
+
+        LoginPage adminLoginPage = new LoginPage(adminDriver);
+        adminLoginPage.login(config.getAdminUser(), config.getAdminPassword());
+
+        LoginPage userLoginPage = new LoginPage(userDriver);
+        userLoginPage.login(config.getTestUser(), config.getTestPassword());
     }
 
     @AfterEach
     void teardown() {
         adminDriver.quit();
+        userDriver.quit();
     }
-
-//    @Test
-//    public void dummyTest() throws Exception {
-//
-////        UserApi uapi = new UserApi(config);
-////        uapi.createUserIfNonExistent();
-//
-////        ProjectApi papi = new ProjectApi(config);
-////        String pid = papi.createProjectIfNotExists();
-//
-////        MembershipsApi mapi = new MembershipsApi(config);
-////        mapi.createMembershipIfNonExistent("5", "5", "3", "Member");
-//
-//        new TestData().createTestData(true);
-//        return;
-//
-//    }
 
     @Test
     public void setProjectPublicThenNonMemberAccessAllowed() throws Exception {
 
-        // Navigate to project settings page
+        // Admin: Navigate to project settings page
         adminDriver.get("https://" + config.getDomainName() + ".openproject.com/projects/" +
                 config.getTestProjectId() + "/settings/general/");
 
-        ProjectSettingsInformationPage projectSettingsInformationPage = new ProjectSettingsInformationPage(adminDriver);
+        ProjectSettingsInformationPage projectSettingsInformationPage =
+                new ProjectSettingsInformationPage(adminDriver);
 
         // verify we are on the right page!
         assertThat(projectSettingsInformationPage.getProjectName()).isEqualTo(config.getTestProjectName());
@@ -80,12 +72,8 @@ public class PublicProjectConfigTests {
         // save changes
         projectSettingsInformationPage.saveChanges();
 
-        // on a new browser session, login as test user
-        WebDriver userDriver = WebDriverManager.chromedriver().create();
-        LoginPage loginPage = new LoginPage(userDriver);
-        loginPage.login(config.getTestUser(), config.getTestPassword());
-
-        // access the public project
+        // User: access the public project
+        Thread.sleep(Duration.ofSeconds(3).toMillis());
         userDriver.get("https://" + config.getDomainName() + ".openproject.com/projects/" + config.getTestProjectId());
 
         // verify project description
@@ -96,11 +84,12 @@ public class PublicProjectConfigTests {
     @Test
     public void setProjectNotPublicThenNonMemberAccessRefused() throws Exception {
 
-        // Navigate to project settings page
+        // Admin: Navigate to project settings page
         adminDriver.get("https://" + config.getDomainName() + ".openproject.com/projects/" +
                 config.getTestProjectId() + "/settings/general/");
 
-        ProjectSettingsInformationPage projectSettingsInformationPage = new ProjectSettingsInformationPage(adminDriver);
+        ProjectSettingsInformationPage projectSettingsInformationPage =
+                new ProjectSettingsInformationPage(adminDriver);
 
         // verify we are on the right page!
         assertThat(projectSettingsInformationPage.getProjectName()).isEqualTo(config.getTestProjectName());
@@ -111,17 +100,16 @@ public class PublicProjectConfigTests {
         // save changes
         projectSettingsInformationPage.saveChanges();
 
-        // on a new browser session, login as test user
-        WebDriver driver2 = WebDriverManager.chromedriver().create();
-        LoginPage loginPage = new LoginPage(driver2);
-        loginPage.login(config.getTestUser(), config.getTestPassword());
-
-        // try to access the non-public project
-        driver2.get("https://" + config.getDomainName() + ".openproject.com/projects/" + config.getTestProjectId());
+        // User: try to access the non-public project
+        Thread.sleep(Duration.ofSeconds(3).toMillis());
+        userDriver.get("https://" + config.getDomainName() +
+                ".openproject.com/projects/" + config.getTestProjectId());
 
         // verify access not allowed
-        WaitWrappers waitWrappers = new WaitWrappers(driver2, 30);
-        WebElement we = waitWrappers.waitForElement(By.cssSelector(".op-toast--content"));
-        assertThat(we.getText().contains("[Error 403] You are not authorized to access this page."));
+        String expectedErrorMessage = "[Error 403] You are not authorized to access this page.";
+        ToastPage toastPage = new ToastPage(userDriver);
+        String toastText = toastPage.getText();
+        toastPage.closeToast();
+        assertThat(toastText).isEqualTo(expectedErrorMessage);
     }
 }

@@ -121,10 +121,6 @@ public class MembershipsApi {
         request.addHeader("Authorization", "Basic " + encodedApiKey);
         request.addHeader("Content-Type", "application/json");
 
-//        // add body
-//        StringBuilder json = new StringBuilder();
-//        json.append("{}");
-
         CloseableHttpResponse response = httpClient.execute(request);
         log.info(">>> getMembershipByPrincipalAndProject, response code: " + response.getStatusLine().getStatusCode());
 
@@ -135,13 +131,11 @@ public class MembershipsApi {
             resultBody = EntityUtils.toString(entity);
             String message =
                     "getMembershipByPrincipalAndProject: Call to GET " + url + "\n" +
-//                            "Payload:\n" + json + "\n" +
                             "Returned:\n" +
                             response.getStatusLine().getStatusCode() + "\n" +
                             response.getStatusLine().getReasonPhrase() + "\n" +
                             response.getStatusLine().toString() +
                             resultBody.toString();
-
             throw new Exception(message);
         }
         HttpEntity entity = response.getEntity();
@@ -162,10 +156,6 @@ public class MembershipsApi {
         request.addHeader("Authorization", "Basic " + encodedApiKey);
         request.addHeader("Content-Type", "application/json");
 
-//        // add body
-//        StringBuilder json = new StringBuilder();
-//        json.append("{}");
-
         CloseableHttpResponse response = httpClient.execute(request);
         log.info(">>> deleteMembershipById, response code: " + response.getStatusLine().getStatusCode());
 
@@ -173,7 +163,6 @@ public class MembershipsApi {
         if (response.getStatusLine().getStatusCode() != 204) {
             String message =
                     "deleteProject: Call to DELETE " + url + "\n" +
-//                            "Payload:\n" + json + "\n" +
                             "Returned:\n" +
                             response.getStatusLine().getStatusCode() + "\n" +
                             response.getStatusLine().getReasonPhrase() + "\n" +
@@ -191,10 +180,8 @@ public class MembershipsApi {
         String jsonStr = getMembershipByPrincipalAndProject(principalId, projectId);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode json = mapper.readTree(jsonStr);
-
         deleteMembershipById(json.get("_embedded").get("elements").get(0).get("id").asText());
     }
-
 
     public void createMembershipIfNonExistent(String principalId, String projectId, String roleId, String roleTitle) throws Exception {
 

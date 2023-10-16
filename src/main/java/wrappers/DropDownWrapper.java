@@ -3,6 +3,7 @@ package wrappers;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 
 public class DropDownWrapper {
 
@@ -19,8 +20,15 @@ public class DropDownWrapper {
     }
 
     public void select(String option) {
-        String locator = "div[title=" + option + "]";
-        this.ddElement.click();
-        waitWrappers.waitForElement(By.cssSelector(locator)).click();
+
+        // if it's a 'real' select, use the Select class
+        if (ddElement.getTagName().equals("select")) {
+            Select select = new Select(ddElement);
+            select.selectByValue(option);
+        } else {
+            String locator = "div[title=" + option + "]";
+            this.ddElement.click();
+            waitWrappers.waitForElement(By.cssSelector(locator)).click();
+        }
     }
 }

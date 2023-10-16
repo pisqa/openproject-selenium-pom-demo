@@ -2,13 +2,11 @@ package pages;
 
 import java.time.Duration;
 import java.util.List;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.Select;
-
 import utils.Config;
+import wrappers.DropDownWrapper;
 import wrappers.WaitWrappers;
 
 public class LoginPage {
@@ -47,8 +45,9 @@ public class LoginPage {
 
         if (!modalList.isEmpty()) {
             //make sure English is selected
-            Select select = new Select(waitWrappers.waitForElement(languageSelector));
-            select.selectByValue("en");
+            DropDownWrapper dropDownWrapper = new DropDownWrapper(driver, languageSelector);
+            dropDownWrapper.select("en");
+
             driver.findElement(modalSubmitButton).click();
             Thread.sleep(Duration.ofSeconds(1).toMillis());
             waitWrappers.waitToBeClickable(skipTourButton).click();

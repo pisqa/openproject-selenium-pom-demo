@@ -8,7 +8,6 @@ import wrappers.DropDownWrapper;
 import wrappers.WaitWrappers;
 import java.util.List;
 
-
 public class UserProjectRolesPage {
 
     private final WebDriver driver;
@@ -58,7 +57,8 @@ public class UserProjectRolesPage {
         driver.findElement(createButton).click();
 
         // verify role is displayed in table
-        String locator = "//td[@class='project']//a[text()='" + project + "']/ancestor::tr/td[@class='roles']/span";
+        String locator = "//td[@class='project']//a[text()='" + project +
+                "']/ancestor::tr/td[@class='roles']/span";
         String regex = "\\s*" + role + "\\s*";
         waitWrappers.waitForTextMatch(By.xpath(locator), regex);
     }

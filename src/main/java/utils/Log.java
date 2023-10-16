@@ -10,6 +10,4 @@ public class Log {
     public void info(String message) {
         logger.info(message);
     }
-
-
 }

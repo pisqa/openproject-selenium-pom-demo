@@ -30,8 +30,10 @@ public class TaskSettingsPage {
 
         Actions actions = new Actions(driver);
         String sourceLocator =
-                "//*[@class='group-edit-handler' or @class='group-name'][text()='" +  sourceGroup  + "']/../../.." +
-                        "//span[@class='attribute-name'][contains(text(), '" + fieldName + "')]/preceding-sibling::span";
+                "//*[@class='group-edit-handler' or @class='group-name'][text()='" +
+                        sourceGroup  + "']/../../.." +
+                        "//span[@class='attribute-name'][contains(text(), '" +
+                        fieldName + "')]/preceding-sibling::span";
 
         WebElement source = driver.findElement(By.xpath(sourceLocator));
 
@@ -46,7 +48,8 @@ public class TaskSettingsPage {
 
         //check that move has succeeded
         String newSourceLocator =
-                "//*[@class='group-edit-handler' or @class='group-name'][text()='" +  targetGroup  + "']/../../.." +
+                "//*[@class='group-edit-handler' or @class='group-name'][text()='" +  targetGroup  +
+                        "']/../../.." +
                         "//span[@class='attribute-name'][contains(text(), '" + fieldName + "')]";
 
         waitWrappers.waitForElement(By.xpath(newSourceLocator));
@@ -57,8 +60,11 @@ public class TaskSettingsPage {
     }
 
     public boolean fieldExistsInGroup(String group, String field) {
-        String locator = "//div[@class='group-edit-handler' and text()='" + group + "']/ancestor::div[@class='type-form-conf-group']";
+        String locator = "//div[@class='group-edit-handler' and text()='" + group +
+                "']/ancestor::div[@class='type-form-conf-group']";
         WebElement groupEl = waitWrappers.waitForElement(By.xpath(locator));
-        return !groupEl.findElements(By.xpath("//span[@class='attribute-name' and contains(text(), '" + field + "')]")).isEmpty();
+        return !groupEl.findElements(By.xpath(
+                "//span[@class='attribute-name' and contains(text(), '" +
+                        field + "')]")).isEmpty();
     }
 }

@@ -69,11 +69,12 @@ public class WorkPackagePage {
     public String getCustomFieldValue(String groupName, String fieldName) {
 
         String groupLocator = "div.attributes-group[data-group-name='" + groupName + "']";
-        String fieldLlocator = "//span[contains(@data-field-name, 'customField') and contains(@aria-label, '" + fieldName + "')]";
+        String fieldLocator = "//span[contains(@data-field-name, 'customField') and " +
+                "contains(@aria-label, '" + fieldName + "')]";
 
         WebElement groupEl = waitWrappers.waitForElement(By.cssSelector(groupLocator));
 
-        return groupEl.findElement(By.xpath(fieldLlocator)).getText();
+        return groupEl.findElement(By.xpath(fieldLocator)).getText();
     }
 }
 

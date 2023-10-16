@@ -3,7 +3,7 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.Select;
+import wrappers.DropDownWrapper;
 import wrappers.WaitWrappers;
 
 public class UserListPage {
@@ -24,8 +24,8 @@ public class UserListPage {
     }
 
     public void selectSearchStatus(String status) {
-        Select select = new Select(waitWrappers.waitForElement(searchSelector));
-        select.selectByValue(status);
+        DropDownWrapper dropDownWrapper = new DropDownWrapper(driver, searchSelector);
+        dropDownWrapper.select(status);
     }
 
     public void enterSearchName(String name) {
@@ -50,6 +50,7 @@ public class UserListPage {
     }
 
     public void selectUserAtRow(int row) {
-        driver.findElement(By.xpath("//td[@class='username'][" + row + "]")).click();
+        driver.findElement(By.xpath(
+                "//td[@class='username'][" + row + "]")).click();
     }
 }

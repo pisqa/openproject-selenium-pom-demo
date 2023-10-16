@@ -78,11 +78,12 @@ public class ProjectApi {
         log.info(">>> createProject, response code: " + statusCode);
 
         // work-around for intermittent 422 error: retry after delay
-        int retries = 4;
+        int retries = 3;
         int delay = 15;
         while (statusCode == 422 && retries > 0) {
-            log.info(">>> createProject, delay & retry after 422");
+            log.info(">>> createProject, delay after 422 (" + (4-retries) + ")");
             Thread.sleep(Duration.ofSeconds(delay).toMillis());
+            log.info(">>> createProject, retry after delay");
             response = httpClient.execute(request);
             statusCode = response.getStatusLine().getStatusCode();
             log.info(">>> createProject, status code after retry: " + statusCode);
@@ -123,10 +124,6 @@ public class ProjectApi {
         request.addHeader("Authorization", "Basic " + encodedApiKey);
         request.addHeader("Content-Type", "application/json");
 
-        // add body
-        StringBuilder json = new StringBuilder();
-        json.append("{}");
-
         CloseableHttpResponse response = httpClient.execute(request);
         log.info(">>> deleteProject, response code: " + response.getStatusLine().getStatusCode());
 
@@ -134,7 +131,6 @@ public class ProjectApi {
         if (response.getStatusLine().getStatusCode() != 204) {
             String message =
                     "deleteProject: Call to DELETE " + url + "\n" +
-                            "Payload:\n" + json + "\n" +
                             "Returned:\n" +
                             response.getStatusLine().getStatusCode() + "\n" +
                             response.getStatusLine().getReasonPhrase() + "\n" +
@@ -156,10 +152,6 @@ public class ProjectApi {
         request.addHeader("Authorization", "Basic " + encodedApiKey);
         request.addHeader("Content-Type", "application/json");
 
-        // add body
-        StringBuilder json = new StringBuilder();
-        json.append("{}");
-
         CloseableHttpResponse response = httpClient.execute(request);
         log.info(">>> getAllProjects, response code: " + response.getStatusLine().getStatusCode());
 
@@ -167,7 +159,6 @@ public class ProjectApi {
         if (response.getStatusLine().getStatusCode() != 200) {
             String message =
                     "getAllProjects: Call to GET " + url + "\n" +
-                            "Payload:\n" + json + "\n" +
                             "Returned:\n" +
                             response.getStatusLine().getStatusCode() + "\n" +
                             response.getStatusLine().getReasonPhrase() + "\n" +
@@ -215,10 +206,6 @@ public class ProjectApi {
         request.addHeader("Authorization", "Basic " + encodedApiKey);
         request.addHeader("Content-Type", "application/json");
 
-//        // add body
-//        StringBuilder json = new StringBuilder();
-//        json.append("{}");
-
         CloseableHttpResponse response = httpClient.execute(request);
         log.info(">>> getProjectByNameAndIdentifier, response code: " + response.getStatusLine().getStatusCode());
 
@@ -227,7 +214,6 @@ public class ProjectApi {
         if (response.getStatusLine().getStatusCode() != 200) {
             String message =
                     "getProjectByNameAndIdentifier: Call to GET " + url + "\n" +
-//                            "Payload:\n" + json + "\n" +
                             "Returned:\n" +
                             response.getStatusLine().getStatusCode() + "\n" +
                             response.getStatusLine().getReasonPhrase() + "\n" +

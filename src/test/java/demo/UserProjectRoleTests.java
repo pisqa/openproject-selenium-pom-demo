@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UserProjectRoleTests {
 
     WebDriver adminDriver;
+    WebDriver userDriver;
     Config config;
 
     @BeforeAll
@@ -24,17 +25,23 @@ public class UserProjectRoleTests {
 
     @BeforeEach
     void setup() throws Exception {
-        adminDriver = WebDriverManager.chromedriver().create();
+
         config = new Config();
-        LoginPage loginPage = new LoginPage(adminDriver);
-        loginPage.login(config.getAdminUser(), config.getAdminPassword());
+        adminDriver = WebDriverManager.chromedriver().create();
+        userDriver = WebDriverManager.chromedriver().create();
+
+        LoginPage adminLoginPage = new LoginPage(adminDriver);
+        adminLoginPage.login(config.getAdminUser(), config.getAdminPassword());
+
+        LoginPage userLoginPage = new LoginPage(userDriver);
+        userLoginPage.login(config.getTestUser(), config.getTestPassword());
     }
 
     @AfterEach
     void teardown() {
         adminDriver.quit();
+        userDriver.quit();
     }
-
 
     @Test
     public void setUserAsMemberThenWorkPackageCreationAllowed() throws Exception {
@@ -62,14 +69,7 @@ public class UserProjectRoleTests {
         //add role of Member
         userProjectRolesPage.createProjectRole(config.getTestProjectName(), "Member");
 
-        // User: Login and create Work Package
-
-        // on a new browser session, login as test user
-        WebDriver userDriver = WebDriverManager.chromedriver().create();
-        LoginPage loginPage = new LoginPage(userDriver);
-        loginPage.login(config.getTestUser(), config.getTestPassword());
-
-        // access the project work packages page
+        // User: navigate to the project work packages page
         String url = "https://" + config.getDomainName() + ".openproject.com/projects/" +
                 config.getTestProjectId() + "/work_packages";
         userDriver.get(url);
@@ -109,19 +109,12 @@ public class UserProjectRoleTests {
         //add role of Project admin
         userProjectRolesPage.createProjectRole(config.getTestProjectName(), "Project admin");
 
-        // User: Login and create Work Package
-
-        // on a new browser session, login as test user
-        WebDriver userDriver = WebDriverManager.chromedriver().create();
-        LoginPage loginPage = new LoginPage(userDriver);
-        loginPage.login(config.getTestUser(), config.getTestPassword());
-
-        // access the project work packages page
+        // User: navigate to the project work packages page
         String url = "https://" + config.getDomainName() + ".openproject.com/projects/" +
                 config.getTestProjectId() + "/work_packages";
         userDriver.get(url);
 
-        // verify Work Package create buttons enabled
+        // User: verify Work Package create buttons enabled
         WorkPackagesListPage workPackagesListPage = new WorkPackagesListPage(userDriver);
         assertThat(workPackagesListPage.toolbarCreateButtonEnabled()).isTrue();
         assertThat(workPackagesListPage.tableCreateButtonAvailable(true)).isTrue();
@@ -153,16 +146,10 @@ public class UserProjectRoleTests {
         UserProjectRolesPage userProjectRolesPage = new UserProjectRolesPage(adminDriver);
         userProjectRolesPage.deleteProjectRole(config.getTestProjectName());
 
-        //add role of Reader
+        // add role of Reader
         userProjectRolesPage.createProjectRole(config.getTestProjectName(), "Reader");
 
-        // User: Login and try to create Work Package
-        // on a new browser session, login as test user
-        WebDriver userDriver = WebDriverManager.chromedriver().create();
-        LoginPage loginPage = new LoginPage(userDriver);
-        loginPage.login(config.getTestUser(), config.getTestPassword());
-
-        // access the project work packages page
+        // User: navigate to the project work packages page
         String url = "https://" + config.getDomainName() + ".openproject.com/projects/" +
                 config.getTestProjectId() + "/work_packages";
         userDriver.get(url);
@@ -176,18 +163,4 @@ public class UserProjectRoleTests {
         userProjectRolesPage.deleteProjectRole(config.getTestProjectName());
     }
 
-//    @Test
-    public void tmp1 () throws Exception {
-
-        WebDriver userDriver = WebDriverManager.chromedriver().create();
-        LoginPage loginPage = new LoginPage(userDriver);
-        loginPage.login(config.getTestUser(), config.getTestPassword());
-
-        userDriver.get("https://itsnotwhatyouthink.openproject.com/projects/spd/work_packages");
-//        https://itsnotwhatyouthink.openproject.com/projects/spd/work_packages
-
-        WorkPackagesListPage wpl = new WorkPackagesListPage(userDriver);
-        assertThat(wpl.tableCreateButtonAvailable(true)).isTrue();
-
-    }
 }

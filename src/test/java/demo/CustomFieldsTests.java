@@ -9,14 +9,13 @@ import org.openqa.selenium.WebDriver;
 import pages.*;
 import utils.Config;
 import utils.TestData;
-
 import java.time.Duration;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CustomFieldsTests {
 
     WebDriver adminDriver;
+    WebDriver userDriver;
     Config config;
 
     @BeforeAll
@@ -26,44 +25,47 @@ public class CustomFieldsTests {
 
     @BeforeEach
     void setup() throws Exception {
-        adminDriver = WebDriverManager.chromedriver().create();
         config = new Config();
-        LoginPage loginPage = new LoginPage(adminDriver);
-        loginPage.login(config.getAdminUser(), config.getAdminPassword());
+        adminDriver = WebDriverManager.chromedriver().create();
+        userDriver = WebDriverManager.chromedriver().create();
+
+        LoginPage adminLoginPage = new LoginPage(adminDriver);
+        adminLoginPage.login(config.getAdminUser(), config.getAdminPassword());
+
+        LoginPage userLoginPage = new LoginPage(userDriver);
+        userLoginPage.login(config.getTestUser(), config.getTestPassword());
     }
 
     @AfterEach
     void teardown() {
         adminDriver.quit();
+        userDriver.quit();
     }
 
     @Test
     public void addAndRemoveCustomFieldInTask() throws Exception {
 
-        // Admin: create custom field
-
         String customGroupName = "Details";
         String customFieldName = "Auto Test Custom Field";
         String taskName = "Auto Test Task";
 
+        // Admin: navigate to custom fields page
         adminDriver.get("https://" + config.getDomainName() + ".openproject.com/custom_fields");
-
         CustomFieldsListPage customFieldsListPage = new CustomFieldsListPage(adminDriver);
         customFieldsListPage.selectTab("Work packages");
 
-        //delete the test custom field if it exists
+        // Admin: delete the test custom field if it exists
         customFieldsListPage.deleteCustomField(customFieldName);
 
-        //create custom field
+        // Admin: create custom field
         customFieldsListPage.startCreateCustomField();
-
         CustomFieldsPage customFieldsPage = new CustomFieldsPage(adminDriver);
         customFieldsPage.enterFieldName(customFieldName);
         customFieldsPage.selectFormat("bool");
         customFieldsPage.saveNewCustomField();
 
-        //Admin: add custom field to task
-        //go to types page
+        // Admin: add custom field to task
+        // navigate to types page
         adminDriver.get("https://" + config.getDomainName() + ".openproject.com/types");
         WorkPackageTypesListPage workPackageTypesListPage = new WorkPackageTypesListPage(adminDriver);
         workPackageTypesListPage.selectTypeByName("Task");
@@ -74,11 +76,6 @@ public class CustomFieldsTests {
         taskSettingsPage.saveChanges();
 
         // Test User: create a new task
-        // on a new browser session, login as test user
-        WebDriver userDriver = WebDriverManager.chromedriver().create();
-        LoginPage loginPage = new LoginPage(userDriver);
-        loginPage.login(config.getTestUser(), config.getTestPassword());
-
         String url = "https://" + config.getDomainName() + ".openproject.com/projects/" +
                 config.getTestProjectId() + "/work_packages";
         userDriver.get(url);
@@ -104,7 +101,7 @@ public class CustomFieldsTests {
 
         // verify title and custom field
 
-        // see if this helps with occasional StaleElementReferenceException in getCustomFieldValue
+        // see if sleep helps with occasional StaleElementReferenceException in getCustomFieldValue
         Thread.sleep(Duration.ofSeconds(5).toMillis());
         assertThat(workPackagePage.getWorkItemTitle()).isEqualTo(taskName);
         assertThat( workPackagePage.customFieldExistsInGroup(customGroupName, customFieldName)).isTrue();

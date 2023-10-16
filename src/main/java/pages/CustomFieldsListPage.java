@@ -5,16 +5,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import wrappers.WaitWrappers;
-
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class CustomFieldsListPage {
     private final WebDriver driver;
     private final WaitWrappers waitWrappers;
 
-    private final By listTable = By.cssSelector("tbody");
     private final By noResultsTable = By.className("generic-table--no-results-title");
     private final By createCustomFieldButton = By.cssSelector(".button[title='New custom field']");
     private final By titleText = By.cssSelector(".title-container>h2");
@@ -51,7 +47,6 @@ public class CustomFieldsListPage {
 
             // accept confirm alert
             Alert alert = waitWrappers.waitForAlert();
-            assertThat(alert.getText()).isEqualTo("Are you sure?");
             alert.accept();
 
             // wait for table reload

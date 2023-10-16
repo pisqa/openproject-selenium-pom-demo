@@ -15,6 +15,7 @@ public class UserGeneralPage {
     }
 
     public void selectTab(String tab) {
-        waitWrappers.waitForElement(By.xpath("//a[@class='op-tab-row--link'][text()='" + tab + "']")).click();
+        waitWrappers.waitForElement(By.xpath(
+                "//a[@class='op-tab-row--link'][text()='" + tab + "']")).click();
     }
 }
