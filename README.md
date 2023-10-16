@@ -154,6 +154,7 @@ public void startCreateCustomField() {
 
 Now we are at https://{domain}.openproject.com/custom_fields/new?type=WorkPackageCustomField:
 
+
 ![Custom field](src/main/resources/custom-field.JPG)
 
 The page object for this page is defined in
@@ -176,10 +177,11 @@ The class CustomFieldPage defines 3 methods to: enter the field name, select the
     }
 ```
 
+
 A couple of things to note about this POM implementation:
 
 · The POM methods are mostly 'low-level' - they interact with a single UI control such as text box or button. An exception is the
-[Login Page](src/test/java/pages/LoginPage.java), which is 'high-level'. 
+[Login Page](src/main/java/pages/LoginPage.java), which is 'high-level'. 
 It exposes a single login() method which takes parameters user and password, 
 and completes the login process (including logic to handle the possible onboarding modal for new users).
 
