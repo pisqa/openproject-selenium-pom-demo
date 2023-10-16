@@ -252,7 +252,7 @@ the call to workPackagePage.getCustomFieldValue() at line 108 occasionally throw
 Adding the thread.sleep() at line 105 seems to help, but need to fix properly.
 
 ### ElementClickInterceptedException
-In [src/main/java/pages/Login.java](src/main/java/pages/Login.java) 
+In [src/main/java/pages/LoginPage.java](src/main/java/pages/LoginPage.java) 
 the call to  waitWrappers.waitToBeClickable(skipTourButton).click() at line 53 usually throws ElementClickInterceptedException.
 Adding the thread.sleep() beforehand seems to help, but need to find a permanent fix.
 
