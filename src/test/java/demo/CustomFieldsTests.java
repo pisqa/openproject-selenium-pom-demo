@@ -59,10 +59,10 @@ public class CustomFieldsTests {
 
         // Admin: create custom field
         customFieldsListPage.startCreateCustomField();
-        CustomFieldsPage customFieldsPage = new CustomFieldsPage(adminDriver);
-        customFieldsPage.enterFieldName(customFieldName);
-        customFieldsPage.selectFormat("bool");
-        customFieldsPage.saveNewCustomField();
+        CustomFieldPage customFieldPage = new CustomFieldPage(adminDriver);
+        customFieldPage.enterFieldName(customFieldName);
+        customFieldPage.selectFormat("bool");
+        customFieldPage.saveNewCustomField();
 
         // Admin: add custom field to task
         // navigate to types page

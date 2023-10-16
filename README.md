@@ -111,24 +111,91 @@ in dozens of test cases.
 ### Robustness
 
 ### Readability
-The test case code tends to be more concise , with references to well-named classes and methods making the 
+The test case code tends to be more concise, with references to well-named classes and methods making the 
 intent and flow of the test case much clearer, as can be seen from this snippet:
 
 ```
-        // User: try to access the non-public project
-        userDriver.get("https://" + config.getDomainName() + 
-                ".openproject.com/projects/" + config.getTestProjectId());
-
-        // verify access not allowed
-        String expectedErrorMessage = "[Error 403] You are not authorized to access this page.";
-        ToastPage toastPage = new ToastPage(userDriver);
-        String toastText = toastPage.getText();
-        toastPage.closeToast();
-        assertThat(toastText).isEqualTo(expectedErrorMessage);
+        // Admin: create custom field
+        customFieldsListPage.startCreateCustomField();
+        CustomFieldsPage customFieldPage = new CustomFieldsPage(adminDriver);
+        customFieldPage.enterFieldName(customFieldName);
+        customFieldPage.selectFormat("bool");
+        customFieldPage.saveNewCustomField();
 ```
+
+### Example Usage
+Let's walk through an example Page Object, to explain the idea in more depth.
+We continue with the previous snippet, taken from 
+[src/test/java/demo/CustomFieldsTests.java](src/test/java/demo/CustomFieldsTests.java) (lines 60-65).
+
+The Administrator is about to create a new custom field at https://{domain}.openproject.com/custom_fields:
+
+
+![Custom fields list](src/main/resources/custom-fields-list.JPG)
+
+The page object for this page is defined in 
+[src/test/java/pages/CustomFieldsListPage.java](src/test/java/pages/CustomFieldsListPage.java).
+
+
+The class CustomFieldsListPage exposes a number of methods including startCreateCustomField, 
+which simply clicks on the Create custom field button, and waits for the new custom field page to load: 
+```
+public void startCreateCustomField() {
+    waitWrappers.waitForElement(createCustomFieldButton).click();
+    waitWrappers.waitForText(titleText, "New custom field");
+}
+```
+
+Now we are at https://{<domain}.openproject.com/custom_fields/new?type=WorkPackageCustomField:
+
+![Custom field](src/main/resources/custom-field.JPG)
+
+The page object for this page is defined in
+[src/test/java/pages/CustomFieldPage.java](src/test/java/pages/CustomFieldPage.java).
+
+The class CustomFieldPage defines 3 methods to: enter the field name, select the field format and save the new field:
+
+```
+    public void enterFieldName(String name) {
+        waitWrappers.waitForElement(customFieldName).sendKeys(name);
+    }
+
+    public void selectFormat(String format) {
+        DropDownWrapper dropDownWrapper = new DropDownWrapper(driver, formatSelector);
+        dropDownWrapper.select(format);
+    }
+
+    public void saveNewCustomField() {
+        waitWrappers.waitForElement(saveButton).click();
+    }
+```
+
+A couple of things to note about this POM implementation:
+
+· The POM methods are mostly 'low-level' - they interact with a single UI control such as text box or button. An exception is the
+[Login Page](src/test/java/pages/LoginPage.java), which is 'high-level'. 
+It exposes a single login() method which takes parameters user and password, 
+and completes the login process (including logic to handle the possible onboarding modal for new users).
+
+Both approaches are valid, but it is usually recommended to be consistent and stick with one.
+For this demo, because login is not the focus of the test cases, I chose to implement that high-level.
+
+· This POM is obviously incomplete, with only the necessary objects/methods required for the demo. 
+
 
 ## Project Structure
 Overview of different code components
+
+### [src/test/java/demo](src/test/java/demo)
+The high-level test case source files. We use
+[JUnit 5](https://junit.org/junit5/docs/current/user-guide/)
+ for test runner scaffolding (@BeforeEach, @AfterEach, @test etc).
+
+### [src/main/java/java/pages](src/main/java/java/pages)
+The Page Object Model source files. Most of the 
+
+
+
 
 ## Execution
 
@@ -154,6 +221,17 @@ mvn test
 ```
 
 The tests should take no more then a couple of minutes to run, and display the following results:
+
+
 ![Execution results](src/main/resources/execution-results.JPG)
 
+### Test Report
+To create a test report, execute the following command in the project root folder:
+```
+mvn surefire-report:report-only
+```
+The report will be available in target/site/surefire-report.html:
+
+
+![Test report](src/main/resources/test-report.JPG)
 
